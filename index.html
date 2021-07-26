@@ -1,58 +1,44 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2022.5">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000; min-height: 14.0px}
-    span.s1 {font-kerning: none}
-  </style>
-</head>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<style> rect {fill: lightblue; stroke: black; }</style>
 <body>
-<p class="p1"><span class="s1">&lt;html&gt;</span></p>
-<p class="p1"><span class="s1">&lt;script src='https://d3js.org/d3.v5.min.js'&gt;&lt;/script&gt;</span></p>
-<p class="p1"><span class="s1">&lt;style&gt; rect {fill: lightblue; stroke: black; }&lt;/style&gt;</span></p>
-<p class="p1"><span class="s1">&lt;body&gt;</span></p>
-<p class="p1"><span class="s1">&lt;svg width=300 height=300&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/svg&gt;</span></p>
-<p class="p1"><span class="s1">&lt;script&gt;</span></p>
-<p class="p1"><span class="s1">var data = [4,8,15,16,23,42];</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">var margin = 50;</span></p>
-<p class="p1"><span class="s1">var width = 200;</span></p>
-<p class="p1"><span class="s1">var height = 200;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">var x = d3.scaleBand().domain([0,1,2,3,4,5]).range([0,width]);</span></p>
-<p class="p1"><span class="s1">var y = d3.scaleLinear().domain([0,42]).range([height,0]);</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">d3.select("svg")</span></p>
-<p class="p1"><span class="s1">.attr("width", width + 2*margin)</span></p>
-<p class="p1"><span class="s1">.attr("height", height + 2*margin)</span></p>
-<p class="p1"><span class="s1">.append("g")</span></p>
-<p class="p1"><span class="s1">.attr("transform", "translate("+margin+","+margin+")")</span></p>
-<p class="p1"><span class="s1">.selectAll("rect").data(data).enter().append("rect")</span></p>
-<p class="p1"><span class="s1">.attr('x',function(d,i) {return x(i);})</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.attr('y',function(d,i) {return y(d);})</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.attr('width',33.3333)</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>.attr('height',function(d,i) {return height - y(d);})</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">d3.select("svg").append("g")</span></p>
-<p class="p1"><span class="s1">.attr("transform", "translate("+margin+","+margin+")")</span></p>
-<p class="p1"><span class="s1">.call(d3.axisLeft(y))</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">d3.select("svg").append("g")</span></p>
-<p class="p1"><span class="s1">.attr("transform", "translate("+margin+","+(height+margin)+")")</span></p>
-<p class="p1"><span class="s1">.call(d3.axisBottom(x))</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">&lt;/script&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+<svg width=300 height=300>
+</svg>
+<script>
+var data = [4,8,15,16,23,42];
+
+
+
+
+var margin = 50;
+var width = 200;
+var height = 200;
+
+var x = d3.scaleBand().domain([0,1,2,3,4,5]).range([0,width]);
+var y = d3.scaleLinear().domain([0,42]).range([height,0]);
+
+d3.select("svg")
+.attr("width", width + 2*margin)
+.attr("height", height + 2*margin)
+.append("g")
+.attr("transform", "translate("+margin+","+margin+")")
+.selectAll("rect").data(data).enter().append("rect")
+.attr('x',function(d,i) {return x(i);})
+    .attr('y',function(d,i) {return y(d);})
+    .attr('width',33.3333)
+    .attr('height',function(d,i) {return height - y(d);})
+
+
+d3.select("svg").append("g")
+.attr("transform", "translate("+margin+","+margin+")")
+.call(d3.axisLeft(y))
+
+d3.select("svg").append("g")
+.attr("transform", "translate("+margin+","+(height+margin)+")")
+.call(d3.axisBottom(x))
+
+
+
+</script>
 </body>
 </html>
