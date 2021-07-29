@@ -1,12 +1,72 @@
 <!DOCTYPE html>
+<html style="background-color:Ivory;">
+<head>
+<style>
+select {
+  position: absolute;
+  left: 50px;
+  top: 100px;
+}
+h3 {
+  position: absolute;
+  left: 120px;
+  top: 80px;
+  color: #660000;
+}
+
+h4 {
+  position: absolute;
+  left: 120px;
+  top: 120px;
+}
+.toolTip {
+  position: absolute;
+  display: none;
+  min-width: 80px;
+  height: auto;
+  width: auto;
+  background: rgba(0,0,0,0.6);
+  visibility: hidden
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+  color: #fff;
+  z-index: 10;
+}
+</style>
+</head>
+<body>
 <meta charset="utf-8">
 
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
 
 <div class="header">
-  <h2 style="text-align:center">CO2 Emissions by Country (1720 - 2020)</h1>
+  <h1 style="text-align:center">Emission CO2 vs Consumption CO2 by Country</h1>
 </div>
+
+
+<!-- Initialize a select button -->
+<select id="selectButton"></select>
+
+<div class="header">
+  <h3 style="text-align:center">Make a selection from the dropdown list to view data for the selected year.</h3>
+</div>
+
+<div class="header">
+  <h4 style="text-align:center">The scatterplot below plots the emissions CO2 vs consumption CO2 for each country. <br> 
+  Both x and y axes are the same and are on a logarithmic scale. There is a straight line that is useful to compare emission vs consumption. <br> 
+  We can easily compare the 2 values and deduce the difference from the location of the dot relative to the line. <br>
+  The radius of the circle is also relative to the country's population. <br>
+  Hover over the dots to know the country and to find more information related to the country's CO2 data and its population. <br>
+  Note: Some consumption CO2 data is missing. Try a different year! </h4>
+</div>
+
+
+<!-- Color Scale -->
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+
 
 
 
@@ -16,9 +76,9 @@
 <script>
 
 // set the dimensions and margins of the graph
-var margin = {top: 100, right: 300, bottom: 30, left: 200},
-    width = 2000 - margin.left - margin.right,
-    height = 800 - margin.top - margin.bottom;
+var margin = {top: 160, right: 200, bottom: 100, left: 200},
+    width = 1200 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
 var svg = d3.select("#my_dataviz")
@@ -34,44 +94,82 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
 
   var data = data.filter(function(d){ return d.iso_code != "" && d.iso_code != "OWID_WRL"})
 
+  var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+
+  var currData = data
+  .filter(function(d){return d.year >= 1900})
+  // .sort(function(b, a) {
+  //   return a.co2 - b.co2;
+  // }).slice(0,20);
+
   // group the data: I want to draw one line per group
   var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
     .key(function(d) { return d.country;})
-    .entries(data);
+    .entries(currData);
 
   // Add X axis --> it is a date format
   var x = d3.scaleLinear()
-    .domain(d3.extent(data, function(d) { return d.year; }))
+    .domain(d3.extent(currData, function(d) { return d.year; }))
     .range([ 0, width ]);
   svg.append("g")
     .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).ticks(20));
+    .call(d3.axisBottom(x).ticks(20))
+    .selectAll("text")
+      .attr("transform", "translate(-10,0)rotate(-45)")
+      .style("text-anchor", "end");
+
+  svg.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", 0.6*width)
+    .attr("y", height + 50)
+    .text("Year");
+  svg.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("x", -0.3*height)
+    .attr("y", -100)
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("Cumulative CO2 emissions");
 
   // Add Y axis
   var y = d3.scaleLinear()
-    .domain([0, d3.max(data, function(d) { return +d.co2; })])
+    .domain([0, d3.max(currData, function(d) { return +d.cumulative_co2; })])
     .range([ height, 0 ]);
   svg.append("g")
-    .call(d3.axisLeft(y).ticks(40));
+    .call(d3.axisLeft(y).ticks(20));
 
   // color palette
   var res = sumstat.map(function(d){ return d.key }) // list of group names
   var color = d3.scaleOrdinal()
     .domain(res)
-    .range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
+    .range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#a65628','#f781bf','#999999'])
 
   // Draw the line
   svg.selectAll(".line")
       .data(sumstat)
       .enter()
       .append("path")
+      .on("mousemove", function(d){
+            tooltip
+              .style("left", d3.event.pageX - 50 + "px")
+              .style("top", d3.event.pageY - 70 + "px")
+              .style("display", "inline-block")
+              .html(d.country + " (Population: " + (parseInt(d.population).toLocaleString("en")) + ")" + "<br>" + "Emission: " + (parseFloat(d.co2).toLocaleString("en")) + " | " + "Consumption: " + (parseFloat(d.consumption_co2).toLocaleString("en")));
+        })
+      .on("mouseout", function(d){ tooltip.style("display", "none");
+                                  d3.select(this).attr('class', 'line');
+                                        d3.select(this)
+                                          .transition()
+                                          .duration(400);})
         .attr("fill", "none")
         .attr("stroke", function(d){ return color(d.key) })
-        .attr("stroke-width", 2)
+        .attr("stroke-width", 3)
         .attr("d", function(d){
           return d3.line()
             .x(function(d) { return x(d.year); })
-            .y(function(d) { return y(+d.co2); })
+            .y(function(d) { return y(+d.cumulative_co2); })
             (d.values)
         })
 
