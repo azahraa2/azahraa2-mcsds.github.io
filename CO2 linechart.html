@@ -2,16 +2,48 @@
 <html style="background-color:Ivory;">
 <head>
 <style>
-select {
+input[id= 'barchart'] {
   position: absolute;
-  left: 50px;
+  left: 1176px;
   top: 100px;
+  background-color: #62529c;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  margin: 4px 2px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+input[id= 'scatterplot'] {
+  position: absolute;
+  left: 1150px;
+  top: 150px;
+  background-color: #62529c;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  margin: 4px 2px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+input[id= 'linechart'] {
+  position: absolute;
+  left: 1150px;
+  top: 200px;
+  background-color: #62529c;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  margin: 4px 2px;
+  cursor: pointer;
+  opacity: 0.6;
 }
 h3 {
   position: absolute;
   left: 120px;
   top: 80px;
   color: #660000;
+  visibility: hidden;
 }
 
 h4 {
@@ -42,24 +74,23 @@ h4 {
 <script src="https://d3js.org/d3.v4.js"></script>
 
 <div class="header">
-  <h1 style="text-align:center">Emission CO2 vs Consumption CO2 by Country</h1>
+  <h1 style="text-align:center">Cumulative CO2 emission by Country since 1900</h1>
 </div>
 
 
 <!-- Initialize a select button -->
-<select id="selectButton"></select>
+<!-- <select id="selectButton"></select> -->
+<input id= 'barchart' type="button" value="Top 20 Countries" onclick="change_page_scatterplot()"/>
+<input id= 'scatterplot' type="button" value="Emission vs Consumption" onclick="change_page_scatterplot()"/>
+<input id= 'linechart' type="button" value="Cumulative CO2 emission" onclick="change_page_scatterplot()"/>
 
 <div class="header">
   <h3 style="text-align:center">Make a selection from the dropdown list to view data for the selected year.</h3>
 </div>
 
 <div class="header">
-  <h4 style="text-align:center">The scatterplot below plots the emissions CO2 vs consumption CO2 for each country. <br> 
-  Both x and y axes are the same and are on a logarithmic scale. There is a straight line that is useful to compare emission vs consumption. <br> 
-  We can easily compare the 2 values and deduce the difference from the location of the dot relative to the line. <br>
-  The radius of the circle is also relative to the country's population. <br>
-  Hover over the dots to know the country and to find more information related to the country's CO2 data and its population. <br>
-  Note: Some consumption CO2 data is missing. Try a different year! </h4>
+  <h4 style="text-align:center">The line chart below displays the cumulative CO2 emissions for each country since 1900. <br> 
+  Hover over a line to know the country that line represents. <br>
 </div>
 
 
@@ -151,18 +182,22 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
       .data(sumstat)
       .enter()
       .append("path")
-      .on("mousemove", function(d){
+      .attr("opacity", 0.6)
+      .on("mouseover", onMouseOver)
+      .on("mousemove", function(d,i){
             tooltip
               .style("left", d3.event.pageX - 50 + "px")
               .style("top", d3.event.pageY - 70 + "px")
               .style("display", "inline-block")
-              .html(d.country + " (Population: " + (parseInt(d.population).toLocaleString("en")) + ")" + "<br>" + "Emission: " + (parseFloat(d.co2).toLocaleString("en")) + " | " + "Consumption: " + (parseFloat(d.consumption_co2).toLocaleString("en")));
+              .html(d3.values(sumstat).map(function(d) { return d.key; })[i]);
+              // .html(d.country + " (Population: " + (parseInt(d.population).toLocaleString("en")) + ")" + "<br>" + "Emission: " + (parseFloat(d.co2).toLocaleString("en")) + " | " + "Consumption: " + (parseFloat(d.consumption_co2).toLocaleString("en")));
         })
       .on("mouseout", function(d){ tooltip.style("display", "none");
                                   d3.select(this).attr('class', 'line');
                                         d3.select(this)
                                           .transition()
-                                          .duration(400);})
+                                          .duration(400)
+                                          .attr("opacity", 0.6);})
         .attr("fill", "none")
         .attr("stroke", function(d){ return color(d.key) })
         .attr("stroke-width", 3)
@@ -174,5 +209,36 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
         })
 
 })
+
+function change_page_scatterplot(){
+  window.location.href = "CO2 scatterplot.html";
+} 
+function change_page_barchart(){
+  window.location.href = "index.html";
+} 
+function change_page_linechart(){
+  window.location.href = "CO2 linechart.html";
+} 
+
+function onMouseOver(d, i) {
+    
+    d3.select(this).attr('class', 'highlight');
+    d3.select(this)
+      .transition()
+      .duration(400)
+      .attr("opacity", 1);
+
+    // svg.append("text")
+    //  .attr('class', 'val') // add class to text label
+    //  .attr('x', function() {
+    //      return x(d.co2) + 10;
+    //  })
+    //  .attr('y', function() {
+    //      return y(d.country) + 19;
+    //  })
+    //  .text(function() {
+    //      return [d.co2];  // Value of the text
+    //  });
+}
 
 </script>

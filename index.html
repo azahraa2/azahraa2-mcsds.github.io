@@ -2,6 +2,42 @@
 <html style="background-color:Ivory;">
 <head>
 <style>
+  input[id= 'barchart'] {
+  position: absolute;
+  left: 1176px;
+  top: 100px;
+  background-color: #62529c;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  margin: 4px 2px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+input[id= 'scatterplot'] {
+  position: absolute;
+  left: 1150px;
+  top: 150px;
+  background-color: #62529c;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  margin: 4px 2px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+input[id= 'linechart'] {
+  position: absolute;
+  left: 1150px;
+  top: 200px;
+  background-color: #62529c;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  margin: 4px 2px;
+  cursor: pointer;
+  opacity: 0.6;
+}
 select {
   position: absolute;
   left: 50px;
@@ -333,6 +369,16 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
         // run the updateChart function with this selected option
         update(selectedOption)
     })
+
+function change_page_scatterplot(){
+  window.location.href = "CO2 scatterplot.html";
+} 
+function change_page_barchart(){
+  window.location.href = "index.html";
+} 
+function change_page_linechart(){
+  window.location.href = "CO2 linechart.html";
+} 
 
 function onMouseOver(d, i) {
     
