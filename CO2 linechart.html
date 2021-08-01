@@ -36,7 +36,7 @@ input[id= 'linechart'] {
   padding: 10px 20px;
   margin: 4px 2px;
   cursor: pointer;
-  opacity: 0.6;
+  opacity: 1;
 }
 h3 {
   position: absolute;
@@ -80,9 +80,9 @@ h4 {
 
 <!-- Initialize a select button -->
 <!-- <select id="selectButton"></select> -->
-<input id= 'barchart' type="button" value="Top 20 Countries" onclick="change_page_scatterplot()"/>
+<input id= 'barchart' type="button" value="Top 20 Countries" onclick="change_page_barchart()"/>
 <input id= 'scatterplot' type="button" value="Emission vs Consumption" onclick="change_page_scatterplot()"/>
-<input id= 'linechart' type="button" value="Cumulative CO2 emission" onclick="change_page_scatterplot()"/>
+<input id= 'linechart' type="button" value="Cumulative CO2 emission" onclick="change_page_linechart()"/>
 
 <div class="header">
   <h3 style="text-align:center">Make a selection from the dropdown list to view data for the selected year.</h3>
@@ -105,6 +105,16 @@ h4 {
 <div id="my_dataviz"></div>
 
 <script>
+
+function change_page_scatterplot(){
+  window.location.href = "CO2 scatterplot.html";
+} 
+function change_page_barchart(){
+  window.location.href = "index.html";
+} 
+function change_page_linechart(){
+  window.location.href = "CO2 linechart.html";
+} 
 
 // set the dimensions and margins of the graph
 var margin = {top: 160, right: 200, bottom: 100, left: 200},
@@ -210,15 +220,7 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
 
 })
 
-function change_page_scatterplot(){
-  window.location.href = "CO2 scatterplot.html";
-} 
-function change_page_barchart(){
-  window.location.href = "index.html";
-} 
-function change_page_linechart(){
-  window.location.href = "CO2 linechart.html";
-} 
+
 
 function onMouseOver(d, i) {
     

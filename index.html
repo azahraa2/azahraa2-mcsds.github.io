@@ -2,7 +2,7 @@
 <html style="background-color:Ivory;">
 <head>
 <style>
-  input[id= 'barchart'] {
+input[id= 'barchart'] {
   position: absolute;
   left: 1176px;
   top: 100px;
@@ -12,7 +12,7 @@
   padding: 10px 20px;
   margin: 4px 2px;
   cursor: pointer;
-  opacity: 0.6;
+  opacity: 1;
 }
 input[id= 'scatterplot'] {
   position: absolute;
@@ -40,8 +40,15 @@ input[id= 'linechart'] {
 }
 select {
   position: absolute;
-  left: 50px;
-  top: 100px;
+  left: 30px;
+  top: 95px;
+  padding: 5px 10px;
+  margin: 1px 1px;
+  background-color: #F2D2BD;
+  border-radius: 10px;
+}
+h1 {
+  color: #660000;
 }
 h3 {
   position: absolute;
@@ -49,11 +56,16 @@ h3 {
   top: 80px;
   color: #660000;
 }
-
 h4 {
   position: absolute;
   left: 120px;
-  top: 120px;
+  top: 130px;
+  padding: 10px 20px;
+  margin: 4px 2px;
+  background-color: #F2D2BD;
+  color: #8B4000;
+  border-radius: 10px;
+  opacity: 0.9;
 }
 .toolTip {
   position: absolute;
@@ -63,7 +75,7 @@ h4 {
   width: auto;
   background: rgba(0,0,0,0.6);
   visibility: hidden
-  border-radius: 4px;
+  border-radius: 10px;
   padding: 10px;
   text-align: center;
   color: #fff;
@@ -77,6 +89,10 @@ h4 {
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
 
+<!-- Load annotation by Susie Lu -->
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+
+
 <div class="header">
   <h1 style="text-align:center">CO2 Emissions per year (Top 20 countries)</h1>
 </div>
@@ -84,9 +100,15 @@ h4 {
 
 <!-- Initialize a select button -->
 <select id="selectButton"></select>
+<input id= 'barchart' type="button" value="Top 20 Countries" onclick="change_page_barchart()"/>
+<input id= 'scatterplot' type="button" value="Emission vs Consumption" onclick="change_page_scatterplot()"/>
+<input id= 'linechart' type="button" value="Cumulative CO2 emission" onclick="change_page_linechart()"/>
+
+
+
 
 <div class="header">
-  <h3 style="text-align:center">Make a selection from the dropdown list to view data for the selected year.</h3>
+  <h3 style="text-align:center">Make a selection from the dropdown list on the left to view data for the selected year.</h3>
 </div>
 
 <div class="header">
@@ -106,6 +128,17 @@ h4 {
 <div id="my_dataviz"></div>
 
 <script>
+
+function change_page_scatterplot(){
+  window.location.href = "CO2 scatterplot.html";
+} 
+function change_page_barchart(){
+  window.location.href = "index.html";
+} 
+function change_page_linechart(){
+  window.location.href = "CO2 linechart.html";
+} 
+
 
 // set the dimensions and margins of the graph
 var margin = {top: 160, right: 200, bottom: 100, left: 200},
@@ -238,7 +271,7 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
   .attr("width", function(d) { return x(d.co2); })
   .delay(function(d,i){console.log(i) ; return(i*100)})
 
-  svg.append("text")
+  var text = svg.append("text")
      .attr('class', 'val') // add class to text label
      .attr('x', function() {
          return 100;
@@ -247,12 +280,38 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
          return y(currData[0].country) - 20;
      })
      .text(function() {
-         return [currData[0].country] + " is the country with most CO2 emissions in the year " + [currData[0].year] + "!";  // Value of the text
-     });
+         return "VERDICT: " + [currData[0].country] + " is the country with most CO2 emissions in the year " + [currData[0].year] + "!";  // Value of the text
+     })
+     .attr('fill', '#660000');
+
+
+  const annotationsRight = [
+  {
+    note: {
+      label: "China and United States have taken the lead by a large margin since 1991!"
+    },
+    connector: {
+      end: "none",        // none, or arrow or dot
+      type: "curve",       // Line or curve
+      points: 2,           // Number of break in the curve
+      lineType : "horizontal"
+    },
+    color: ["#62529c"],
+    x: 650,
+    y: 20,
+    dy: 70,
+    dx: 70
+  }
+];
+
+const makeAnnotationsRight = d3.annotation()
+  .annotations(annotationsRight);
+svg.append("g")
+  .call(makeAnnotationsRight);
     
 
     // A function that update the chart
-    function update(selectedGroup) {
+  function update(selectedGroup) {
 
       // Create new data with the selection?
       // var dataFilter = data.filter(function(d){return d.year==selectedGroup})
@@ -346,19 +405,33 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
          return y(currData[0].country) - 20;
      })
      .text(function() {
-         return [currData[0].country] + " is the country with most CO2 emissions in the year " + [currData[0].year] + "!";  // Value of the text
-     });
+         return "VERDICT: " + [currData[0].country] + " is the country with most CO2 emissions in the year " + [currData[0].year] + "!";  // Value of the text
+     })
+     .attr('fill', '#660000');
 
-    //   // Give these new data to update line
-    //   line
-    //       .datum(dataFilter)
-    //       .transition()
-    //       .duration(1000)
-    //       .attr("d", d3.line()
-    //         .x(function(d) { return x(d.year) })
-    //         .y(function(d) { return y(+d.co2) })
-    //       )
-    //       .attr("stroke", function(d){ return myColor(selectedGroup) })
+    const annotationsRight = [
+  {
+    note: {
+      label: "China and United States have taken the lead by a large margin since 1991!"
+    },
+    connector: {
+      end: "none",        // none, or arrow or dot
+      type: "curve",       // Line or curve
+      points: 2,           // Number of break in the curve
+      lineType : "horizontal"
+    },
+    color: ["#62529c"],
+    x: 650,
+    y: 20,
+    dy: 70,
+    dx: 70
+  }
+];
+
+const makeAnnotationsRight = d3.annotation()
+  .annotations(annotationsRight);
+svg.append("g")
+  .call(makeAnnotationsRight);
     }
 
 
@@ -370,15 +443,7 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
         update(selectedOption)
     })
 
-function change_page_scatterplot(){
-  window.location.href = "CO2 scatterplot.html";
-} 
-function change_page_barchart(){
-  window.location.href = "index.html";
-} 
-function change_page_linechart(){
-  window.location.href = "CO2 linechart.html";
-} 
+
 
 function onMouseOver(d, i) {
     
