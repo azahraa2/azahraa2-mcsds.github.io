@@ -40,20 +40,32 @@ input[id= 'linechart'] {
 }
 select {
   position: absolute;
-  left: 50px;
-  top: 100px;
+  left: 30px;
+  top: 95px;
+  padding: 5px 10px;
+  margin: 1px 1px;
+  background-color: #F2D2BD;
+  border-radius: 10px;
+}
+h1 {
+  color: #660000;
 }
 h3 {
   position: absolute;
-  left: 120px;
+  left: 130px;
   top: 80px;
   color: #660000;
 }
-
 h4 {
   position: absolute;
-  left: 120px;
-  top: 120px;
+  left: 130px;
+  top: 130px;
+  padding: 10px 20px;
+  margin: 4px 2px;
+  background-color: #F2D2BD;
+  color: #8B4000;
+  border-radius: 10px;
+  opacity: 0.9;
 }
 .toolTip {
   position: absolute;
@@ -63,7 +75,7 @@ h4 {
   width: auto;
   background: rgba(0,0,0,0.6);
   visibility: hidden
-  border-radius: 4px;
+  border-radius: 10px;
   padding: 10px;
   text-align: center;
   color: #fff;
@@ -77,6 +89,9 @@ h4 {
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
 
+<!-- Load annotation by Susie Lu -->
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+
 <div class="header">
   <h1 style="text-align:center">Emission CO2 vs Consumption CO2 by Country</h1>
 </div>
@@ -84,9 +99,9 @@ h4 {
 
 <!-- Initialize a select button -->
 <select id="selectButton"></select>
-<input id= 'barchart' type="button" value="Top 20 Countries" onclick="change_page_barchart()"/>
-<input id= 'scatterplot' type="button" value="Emission vs Consumption" onclick="change_page_scatterplot()"/>
-<input id= 'linechart' type="button" value="Cumulative CO2 emission" onclick="change_page_linechart()"/>
+<input id= 'barchart' type="button" value="View 1: Top 20 Countries" onclick="change_page_barchart()"/>
+<input id= 'scatterplot' type="button" value="View 2: Emission vs Consumption" onclick="change_page_scatterplot()"/>
+<input id= 'linechart' type="button" value="View 3: Cumulative CO2 emission" onclick="change_page_linechart()"/>
 
 
 <div class="header">
@@ -126,7 +141,7 @@ function change_page_linechart(){
 } 
 
 // set the dimensions and margins of the graph
-var margin = {top: 200, right: 200, bottom: 100, left: 200},
+var margin = {top: 220, right: 200, bottom: 100, left: 200},
     width = 1200 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
 
@@ -266,11 +281,61 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
     .delay(function(d,i){return(i*3)})
     .duration(2000)
     .attr("cx", function (d) { return x(Math.log10(d.consumption_co2)); } )
-    .attr("cy", function (d) { return y(Math.log10(d.co2)); } )
+    .attr("cy", function (d) { return y(Math.log10(d.co2)); } );
+
+    const annotationsAxis = [
+  {
+    note: {
+      label: "Points on the axis indicate missing consumption data.",
+      title: "Don't forget about these!"
+    },
+    connector: {
+      end: "none",        // none, or arrow or dot
+      type: "line",       // Line or curve
+      points: 2,           // Number of break in the curve
+      lineType : "horizontal"
+    },
+    color: ["#62529c"],
+    x: 0,
+    y: 100,
+    dy: -20,
+    dx: 30
+  }
+];
+
+const makeAnnotationsAxis = d3.annotation()
+  .annotations(annotationsAxis);
+svg.append("g")
+  .call(makeAnnotationsAxis);
+
+
+  const annotationsPlot = [
+  {
+    note: {
+      label: "Highly populated countries generally have higher CO2 emission & consumption"
+    },
+    connector: {
+      end: "none",        // none, or arrow or dot
+      type: "curve",       // Line or curve
+      points: 2,           // Number of break in the curve
+      lineType : "horizontal"
+    },
+    color: ["#62529c"],
+    x: 800,
+    y: 10,
+    dy: 70,
+    dx: 10
+  }
+];
+
+const makeAnnotationsPlot = d3.annotation()
+  .annotations(annotationsPlot);
+svg.append("g")
+  .call(makeAnnotationsPlot);
     
 
     // A function that update the chart
-    function update(selectedGroup) {
+  function update(selectedGroup) {
 
       // Create new data with the selection?
       // var dataFilter = data.filter(function(d){return d.year==selectedGroup})
@@ -376,6 +441,59 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
     .duration(2000)
     .attr("cx", function (d) { return x(Math.log10(d.consumption_co2)); } )
     .attr("cy", function (d) { return y(Math.log10(d.co2)); } )
+
+
+    const annotationsAxis = [
+  {
+    note: {
+      label: "Points on the axis indicate missing consumption data.",
+      title: "Don't forget about these!"
+    },
+    connector: {
+      end: "none",        // none, or arrow or dot
+      type: "line",       // Line or curve
+      points: 2,           // Number of break in the curve
+      lineType : "horizontal"
+    },
+    color: ["#62529c"],
+    x: 0,
+    y: 100,
+    dy: -20,
+    dx: 30
+  }
+];
+
+const makeAnnotationsAxis = d3.annotation()
+  .annotations(annotationsAxis);
+svg.append("g")
+  .call(makeAnnotationsAxis);
+
+
+  const annotationsPlot = [
+  {
+    note: {
+      label: "Highly populated countries generally have higher CO2 emission & consumption"
+    },
+    connector: {
+      end: "none",        // none, or arrow or dot
+      type: "curve",       // Line or curve
+      points: 2,           // Number of break in the curve
+      lineType : "horizontal"
+    },
+    color: ["#62529c"],
+    x: 800,
+    y: 10,
+    dy: 70,
+    dx: 10
+  }
+];
+
+const makeAnnotationsPlot = d3.annotation()
+  .annotations(annotationsPlot);
+svg.append("g")
+  .call(makeAnnotationsPlot);
+
+
     }
 
 

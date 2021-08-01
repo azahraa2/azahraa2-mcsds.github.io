@@ -38,18 +38,19 @@ input[id= 'linechart'] {
   cursor: pointer;
   opacity: 1;
 }
-h3 {
-  position: absolute;
-  left: 120px;
-  top: 80px;
+h1 {
   color: #660000;
-  visibility: hidden;
 }
-
 h4 {
   position: absolute;
-  left: 120px;
-  top: 120px;
+  left: 130px;
+  top: 100px;
+  padding: 10px 20px;
+  margin: 4px 2px;
+  background-color: #F2D2BD;
+  color: #8B4000;
+  border-radius: 10px;
+  opacity: 0.9;
 }
 .toolTip {
   position: absolute;
@@ -59,7 +60,7 @@ h4 {
   width: auto;
   background: rgba(0,0,0,0.6);
   visibility: hidden
-  border-radius: 4px;
+  border-radius: 10px;
   padding: 10px;
   text-align: center;
   color: #fff;
@@ -73,6 +74,9 @@ h4 {
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v4.js"></script>
 
+<!-- Load annotation by Susie Lu -->
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+
 <div class="header">
   <h1 style="text-align:center">Cumulative CO2 emission by Country since 1900</h1>
 </div>
@@ -80,17 +84,14 @@ h4 {
 
 <!-- Initialize a select button -->
 <!-- <select id="selectButton"></select> -->
-<input id= 'barchart' type="button" value="Top 20 Countries" onclick="change_page_barchart()"/>
-<input id= 'scatterplot' type="button" value="Emission vs Consumption" onclick="change_page_scatterplot()"/>
-<input id= 'linechart' type="button" value="Cumulative CO2 emission" onclick="change_page_linechart()"/>
+<input id= 'barchart' type="button" value="View 1: Top 20 Countries" onclick="change_page_barchart()"/>
+<input id= 'scatterplot' type="button" value="View 2: Emission vs Consumption" onclick="change_page_scatterplot()"/>
+<input id= 'linechart' type="button" value="View 3: Cumulative CO2 emission" onclick="change_page_linechart()"/>
 
-<div class="header">
-  <h3 style="text-align:center">Make a selection from the dropdown list to view data for the selected year.</h3>
-</div>
 
 <div class="header">
   <h4 style="text-align:center">The line chart below displays the cumulative CO2 emissions for each country since 1900. <br> 
-  Hover over a line to know the country that line represents. <br>
+  Hover over a line to see the name of the country that line represents. <br>
 </div>
 
 
@@ -210,7 +211,7 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
                                           .attr("opacity", 0.6);})
         .attr("fill", "none")
         .attr("stroke", function(d){ return color(d.key) })
-        .attr("stroke-width", 3)
+        .attr("stroke-width", 4)
         .attr("d", function(d){
           return d3.line()
             .x(function(d) { return x(d.year); })
@@ -218,7 +219,73 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
             (d.values)
         })
 
+  const annotationsUS = [
+  {
+    note: {
+      label: "No other country can compete with the United States!"
+    },
+    connector: {
+      end: "none",        // none, or arrow or dot
+      type: "line",       // Line or curve
+      points: 2,           // Number of break in the curve
+      lineType : "horizontal"
+    },
+    color: ["#62529c"],
+    x: 700,
+    y: 70,
+    dy: -10,
+    dx: -25
+  }
+];
+
+const makeAnnotationsUS = d3.annotation()
+  .annotations(annotationsUS);
+svg.append("g")
+  .call(makeAnnotationsUS);
+
+
+const type = d3.annotationCalloutCircle
+const annotationsChina = [
+  {
+    note: {
+      label: "China overtaking UK, Russia, and Germany"
+    },
+    connector: {
+      end: "none",        // none, or arrow or dot
+      type: "curve",       // Line or curve
+      points: 3,           // Number of break in the curve
+      lineType : "horizontal"
+    },
+    color: ["#62529c"],
+    x: 680,
+    y: 270,
+    dy: -150,
+    dx: -300,
+    subject: {
+      radius: 30,
+      radiusPadding: 0
+    }
+  }
+];
+
+const makeAnnotationsChina = d3.annotation()
+  .editMode(false)
+  //also can set and override in the note.padding property
+  //of the annotation object
+  .notePadding(10)
+  .type(type)
+  .annotations(annotationsChina)
+
+svg.append("g")
+  .attr("class", "annotation-group")
+  .call(makeAnnotationsChina)
+
+
+
+
 })
+
+
 
 
 

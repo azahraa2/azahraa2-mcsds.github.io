@@ -52,13 +52,13 @@ h1 {
 }
 h3 {
   position: absolute;
-  left: 120px;
+  left: 160px;
   top: 80px;
   color: #660000;
 }
 h4 {
   position: absolute;
-  left: 120px;
+  left: 160px;
   top: 130px;
   padding: 10px 20px;
   margin: 4px 2px;
@@ -100,9 +100,9 @@ h4 {
 
 <!-- Initialize a select button -->
 <select id="selectButton"></select>
-<input id= 'barchart' type="button" value="Top 20 Countries" onclick="change_page_barchart()"/>
-<input id= 'scatterplot' type="button" value="Emission vs Consumption" onclick="change_page_scatterplot()"/>
-<input id= 'linechart' type="button" value="Cumulative CO2 emission" onclick="change_page_linechart()"/>
+<input id= 'barchart' type="button" value="View 1: Top 20 Countries" onclick="change_page_barchart()"/>
+<input id= 'scatterplot' type="button" value="View 2: Emission vs Consumption" onclick="change_page_scatterplot()"/>
+<input id= 'linechart' type="button" value="View 3: Cumulative CO2 emission" onclick="change_page_linechart()"/>
 
 
 
@@ -285,7 +285,7 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
      .attr('fill', '#660000');
 
 
-  const annotationsRight = [
+  const annotations = [
   {
     note: {
       label: "China and United States have taken the lead by a large margin since 1991!"
@@ -298,16 +298,16 @@ var data = d3.csv("https://raw.githubusercontent.com/owid/co2-data/master/owid-c
     },
     color: ["#62529c"],
     x: 650,
-    y: 20,
+    y: 10,
     dy: 70,
-    dx: 70
+    dx: 10
   }
 ];
 
-const makeAnnotationsRight = d3.annotation()
-  .annotations(annotationsRight);
+const makeAnnotations = d3.annotation()
+  .annotations(annotations);
 svg.append("g")
-  .call(makeAnnotationsRight);
+  .call(makeAnnotations);
     
 
     // A function that update the chart
@@ -428,10 +428,10 @@ svg.append("g")
   }
 ];
 
-const makeAnnotationsRight = d3.annotation()
-  .annotations(annotationsRight);
+const makeAnnotations = d3.annotation()
+  .annotations(annotations);
 svg.append("g")
-  .call(makeAnnotationsRight);
+  .call(makeAnnotations);
     }
 
 
